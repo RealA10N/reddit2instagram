@@ -4,6 +4,7 @@ from io import BytesIO
 import os
 import json
 import praw
+from praw.models import Subreddit, Submission
 from PIL import Image, ImageFont
 from img import Post, Title, TitleCollection
 from data import PullSubreddit
@@ -122,3 +123,11 @@ class RedditToInstagram:
 
         # Delete temp image
         os.remove(self.TEMP_FILE_PATH)
+
+
+def main():
+    RedditToInstagram().upload_single_post()
+
+
+if __name__ == "__main__":
+    main()
