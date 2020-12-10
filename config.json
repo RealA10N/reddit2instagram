@@ -1,0 +1,13 @@
+{
+    "reddit": {
+        "client_id": null,
+        "client_secret": null,
+        "user_agent": null,
+        "username": null,
+        "password": null
+    },
+    "instagram": {
+        "username": null,
+        "password": null
+    }
+}
