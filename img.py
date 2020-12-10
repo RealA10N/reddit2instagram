@@ -50,23 +50,23 @@ class Title:
 
         # Add left text
         if self.left_text is not None:
-            draw.text((x, mid_y), self.left_text,
-                      fill=color, font=font, anchor="lm")
+            draw.text((x, mid_y), self.left_text, font=font, anchor="lm")
             x += draw.textsize(self.left_text, font=font)[0] + icon_padding
 
         # Add icon
         icon_y = int((canvas_height - icon_mask.height) / 2)
-        icon_color = Image.new(
-            mode="RGB", size=icon_mask.size, color=color)
-        canvas.paste(icon_color, box=(x, icon_y), mask=icon_mask)
+        canvas.paste(icon_mask, box=(x, icon_y), mask=icon_mask)
         x += icon_mask.width + icon_padding
 
         # Add right text
         if self.right_text is not None:
-            draw.text((x, mid_y), self.right_text,
-                      fill=color, font=font, anchor="lm")
+            draw.text((x, mid_y), self.right_text, font=font, anchor="lm")
 
-        return canvas
+        # Apply color
+        colored = Image.new(mode="RGBA", size=canvas.size, color=color)
+        colored.putalpha(canvas.getchannel('A'))
+
+        return colored
 
 
 class TitleCollection:
