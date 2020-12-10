@@ -85,7 +85,7 @@ class PullSubreddit:
             if now - data['timestamp'] <= self._SAVE_PULLED_DATA_FOR_X_SECONDS
         ]
 
-    def _mark_pulled(self, submission):
+    def _mark_pulled(self, submission: Submission):
         data = {
             "id": submission.id,
             "timestamp": datetime.now().timestamp(),
@@ -93,7 +93,7 @@ class PullSubreddit:
 
         self._already_pulled.append(data)
 
-    def _check_if_pulled(self, submission):
+    def _check_if_pulled(self, submission: Submission):
         return any(submission.id == data['id'] for data in self._already_pulled)
 
     def _generate_data_filepath(self, subreddit: Subreddit):
