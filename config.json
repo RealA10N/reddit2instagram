@@ -1,13 +1,41 @@
 {
     "reddit": {
-        "client_id": null,
-        "client_secret": null,
-        "user_agent": null,
-        "username": null,
-        "password": null
+        "login-info": {
+            "client_id": null,
+            "client_secret": null,
+            "user_agent": null,
+            "username": null,
+            "password": null
+        },
+        "subreddits": [
+            null,
+            null,
+            null
+        ],
+        "nsfw": null
     },
     "instagram": {
-        "username": null,
-        "password": null
+        "login-info": {
+            "username": null,
+            "password": null
+        }
+    },
+    "design": {
+        "generate-config": {
+            "size": 1000,
+            "icon_size": 25,
+            "titles_y_offset": 25,
+            "padding": 50,
+            "icon_padding": 10,
+            "titles_padding": 150
+        },
+        "font": {
+            "path": [
+                "assets",
+                "fonts",
+                "Heebo-Medium.ttf"
+            ],
+            "size": 16
+        }
     }
 }
