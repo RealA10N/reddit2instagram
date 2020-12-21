@@ -157,13 +157,13 @@ def main():
 
     # Upload the image to instagram
     bot._instabot.upload_photo(
-        bot.TEMP_FILE_PATH,
+        TEMP_FILE_PATH,
         caption=submission.title,
         options={"rename": False}
     )
 
     # Delete temp image
-    os.remove(bot.TEMP_FILE_PATH)
+    os.remove(TEMP_FILE_PATH)
 
     comments = CommentStructure("comments.json")
     comments.reply(submission)
