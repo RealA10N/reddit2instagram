@@ -4,7 +4,8 @@ from io import BytesIO
 import os
 import json
 import praw
-from praw.models import Subreddit, Submission
+from typing import Union, List
+from praw.models import Subreddit, Submission, Comment
 from PIL import Image, ImageFont
 from img import Post, Title, TitleCollection
 from data import PullSubreddit
@@ -13,7 +14,6 @@ from data import PullSubreddit
 class RedditToInstagram:
 
     CONFIG_FILE_PATH = "config.json"
-    TEMP_FILE_PATH = "tempimg.jpg"
 
     ICONS_FOLDER = os.path.join("assets", "icons")
     REDDIT_ICON = Image.open(os.path.join(
@@ -83,15 +83,12 @@ class RedditToInstagram:
         titles.add(self.instagram_title())
         return titles
 
-    def pull_submission(self):
-        # Get submission from reddit
-        submission = self._puller.pull_submission(
+    def pull_submission(self) -> Submission:
+        """ Get submission from reddit """
+        return self._puller.pull_submission(
             image=True,
             nsfw=self._config["reddit"]["nsfw"]
         )
-
-        submission.upvote()  # Upvote submission (:
-        return submission
 
     def submission_to_img(self, submission: Submission):
         # Convert submission to instagram post
@@ -102,31 +99,74 @@ class RedditToInstagram:
                              font=self._font,
                              **self._config["design"]["generate-config"])
 
-    def upload_single_post(self):
 
-        # Generate image to upload
-        submission = self.pull_submission()
-        image = self.submission_to_img(submission)
+class CommentStructure:
 
-        # Save image temporarily
-        image.save(self.TEMP_FILE_PATH)
+    def __init__(self, file_path: str):
+        with open(file_path, 'r', encoding='utf8') as f:
+            self.__raw = json.load(f)
 
-        if self._instabot is None:
-            self.load_instagram()
+        if not isinstance(self.__raw, list):
+            raise TypeError(
+                "Comment structure file must be a list of dictioneris.")
 
-        # Upload the image to instagram
-        self._instabot.upload_photo(
-            self.TEMP_FILE_PATH,
-            caption=submission.title,
-            options={"rename": False}
-        )
+    def reply(self, submission: Submission) -> None:
+        return self.__reply(submission, self.__raw)
 
-        # Delete temp image
-        os.remove(self.TEMP_FILE_PATH)
+    def __reply(self,
+                sub_or_comm: Union[Submission, Comment],
+                structure: List,
+                ) -> None:
+
+        for reply in structure:
+
+            if "content" in reply:
+                content = self.__convert_content(reply["content"])
+                reply_of_reply = sub_or_comm.reply(content)
+
+                if "replies" in reply:
+                    for reply_structure in reply["replies"]:
+                        self.__reply(reply_of_reply, reply_structure)
+
+    @staticmethod
+    def __convert_content(content: str):
+
+        if isinstance(content, str):
+            return content
+
+        elif isinstance(content, list):
+            return '\n'.join(content)
+
+        else:
+            raise ValueError("Content must be a string or a list of strings.")
 
 
 def main():
-    RedditToInstagram().upload_single_post()
+
+    TEMP_FILE_PATH = "tempimg.jpg"
+
+    bot = RedditToInstagram()
+    submission = bot.pull_submission()
+    image = bot.submission_to_img(submission)
+
+    # Save image temporarily
+    image.save(TEMP_FILE_PATH)
+
+    if bot._instabot is None:
+        bot.load_instagram()
+
+    # Upload the image to instagram
+    bot._instabot.upload_photo(
+        bot.TEMP_FILE_PATH,
+        caption=submission.title,
+        options={"rename": False}
+    )
+
+    # Delete temp image
+    os.remove(bot.TEMP_FILE_PATH)
+
+    comments = CommentStructure("comments.json")
+    comments.reply(submission)
 
 
 if __name__ == "__main__":
