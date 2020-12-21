@@ -5,7 +5,7 @@ import os
 import json
 import praw
 from typing import Union, List
-from praw.models import Subreddit, Submission, Comment
+from praw.models import Subreddit, Submission, Comment, Redditor
 from PIL import Image, ImageFont
 from img import Post, Title, TitleCollection
 from data import PullSubreddit
@@ -100,7 +100,20 @@ class RedditToInstagram:
                              **self._config["design"]["generate-config"])
 
 
-class CommentStructure:
+class MessageSubmissionAuthor:
+
+    def __init__(self, file_path: str):
+        with open(file_path, 'r', encoding='utf8') as f:
+            raw = f.readlines()
+
+        self.__title = raw.pop(0)
+        self.__message = '\n'.join(raw)
+
+    def message(self, submission: Submission):
+        submission.author.message(self.__title, self.__message)
+
+
+class CommentOnSubmission:
 
     def __init__(self, file_path: str):
         with open(file_path, 'r', encoding='utf8') as f:
@@ -165,8 +178,11 @@ def main():
     # Delete temp image
     os.remove(TEMP_FILE_PATH)
 
-    comments = CommentStructure("comments.json")
+    comments = CommentOnSubmission("comments.json")
     comments.reply(submission)
+
+    message = MessageSubmissionAuthor("message.txt")
+    message.message(submission)
 
 
 if __name__ == "__main__":
