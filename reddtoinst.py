@@ -109,8 +109,15 @@ class MessageSubmissionAuthor:
         self.__title = raw.pop(0)
         self.__message = '\n'.join(raw)
 
+    @staticmethod
+    def __normalize_text(submission: Submission, text: str):
+        return text.replace('{subreddit}', submission.subreddit.display_name
+                            ).replace('{submission}', f"[{submission.title}](https://redd.it/{submission.id})")
+
     def message(self, submission: Submission):
-        submission.author.message(self.__title, self.__message)
+        title = self.__normalize_text(submission, self.__title)
+        message = self.__normalize_text(submission, self.__message)
+        submission.author.message(title, message)
 
 
 class CommentOnSubmission:
