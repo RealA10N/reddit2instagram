@@ -4,6 +4,7 @@ from io import BytesIO
 import os
 import json
 import praw
+import tempfile
 from typing import Union, List
 from praw.models import Subreddit, Submission, Comment, Redditor
 from PIL import Image, ImageFont
@@ -163,27 +164,27 @@ class CommentOnSubmission:
 
 def main():
 
-    TEMP_FILE_PATH = "tempimg.jpg"
-
     bot = RedditToInstagram()
     submission = bot.pull_submission()
     image = bot.submission_to_img(submission)
 
-    # Save image temporarily
-    image.save(TEMP_FILE_PATH)
-
     if bot._instabot is None:
         bot.load_instagram()
 
-    # Upload the image to instagram
-    bot._instabot.upload_photo(
-        TEMP_FILE_PATH,
-        caption=submission.title,
-        options={"rename": False}
-    )
+    with tempfile.NamedTemporaryFile(
+        prefix='reddit-to-instagram',
+        suffix='.jpg',
+    ) as temp:
 
-    # Delete temp image
-    os.remove(TEMP_FILE_PATH)
+        # Save image temporarily
+        image.save(temp)
+
+        # Upload the image to instagram
+        bot._instabot.upload_photo(
+            temp,
+            caption=submission.title,
+            options={"rename": False}
+        )
 
     comments = CommentOnSubmission("comments.json")
     comments.reply(submission)
