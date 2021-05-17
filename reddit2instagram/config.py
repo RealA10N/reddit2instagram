@@ -8,9 +8,9 @@ import yaml
 from .exceptions import InvalidConfigFileType
 
 ValidFileTypes = {
-    "json": json,
-    "yaml": yaml,
-    "yml": yaml,
+    "json": lambda file: json.loads(file),
+    "yaml": lambda file: yaml.full_load(file),
+    "yml": lambda file: yaml.full_load(file),
 }
 
 
@@ -18,11 +18,11 @@ class Config:
 
     def __init__(self, fp: typing.TextIO, filetype: str = 'yaml'):
         loader = self._loader_from_filetype(filetype)
-        self._raw = loader.load(fp.read())
+        self._raw = loader(fp)
 
     @staticmethod
     def _loader_from_filetype(filetype: str):
-        """ Returns a loader object that matches the given filetype string. """
+        """ Returns a loader function that matches the given filetype string. """
 
         try:
             return ValidFileTypes[filetype.lower()]
