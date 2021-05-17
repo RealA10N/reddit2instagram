@@ -1,5 +1,5 @@
 import pytest
-from reddit2instagram import config
+from reddit2instagram.config import config
 
 
 class TestConfig:
