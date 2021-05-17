@@ -8,9 +8,9 @@ import yaml
 from reddit2instagram.exceptions import InvalidConfigFileType
 
 ValidFileTypes = {
-    "json": lambda file: json.loads(file),
-    "yaml": lambda file: yaml.full_load(file),
-    "yml": lambda file: yaml.full_load(file),
+    "json": json.loads,
+    "yaml": yaml.full_load,
+    "yml": yaml.full_load,
 }
 
 
