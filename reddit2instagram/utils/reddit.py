@@ -2,7 +2,7 @@ import typing
 from io import BytesIO
 import requests
 
-from praw.models import Submission
+from praw.models import Submission, Subreddit
 from PIL import Image, UnidentifiedImageError
 
 
@@ -36,19 +36,27 @@ class SubmissionUtils:
         it into a Pillow Image instance. If the post doesn't contain an image
         or the image fails to load, returns `None`. """
 
-        if submission.is_self:
-            # If it is a text post,
-            # there is no image to load and returns `None`.
-            return None
+        if not submission.is_self:  # If not a text post
+            return SubmissionUtils._image_from_url(submission.url)
 
-        # Downloading the image and checking if download went successfully
-        response = requests.get(submission.url)
-        if response.status_code != 200:
-            return None
+    @staticmethod
+    def get_subreddit_icon(submission: Submission
+                           ) -> typing.Optional[Image.Image]:
+        """ Returns the icon of the subreddit that the given submission is
+        posted in. If there is no icon for the subreddit, returns None. """
 
-        try:
-            return Image.open(BytesIO(response.content))
+        pic_url = submission.subreddit.community_icon
+        if pic_url:
+            return SubmissionUtils._image_from_url(pic_url)
 
-        except UnidentifiedImageError:
-            # If image cannot be loaded - It's probably not an image.
-            return None
+    @staticmethod
+    def _image_from_url(url: str) -> typing.Optional[Image.Image]:
+        """ Downloads the image in the provided url and returns it as a Pillow
+        Image instance. If something fails, returns `None`. """
+
+        response = requests.get(url)
+        if response is not None and response.status_code == 200:
+            try:  # Try loading the image
+                return Image.open(BytesIO(response.content))
+            except UnidentifiedImageError:  # If image cannot be loaded
+                return None
