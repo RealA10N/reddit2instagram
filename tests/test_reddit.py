@@ -1,4 +1,3 @@
-from functools import cache
 import pytest
 import praw
 
@@ -13,20 +12,23 @@ from reddit2instagram.utils import SubmissionUtils
 )
 class TestRedditUtils:
 
+    reddit_instances = dict()
+
     def _get_reddit_instance(self, client_id, client_secret, user_agent) -> praw.Reddit:
         if None in (client_id, client_secret):
             pytest.skip("Reddit API credentails aren't provided")
 
         else:
-            return self.__generate_reddit_instance(client_id, client_secret, user_agent)
+            key = (client_id, client_secret, user_agent)
 
-    @cache
-    def __generate_reddit_instance(self, client_id, client_secret, user_agent):
-        return praw.Reddit(
-            client_id=client_id,
-            client_secret=client_secret,
-            user_agent=user_agent
-        )
+            if key not in self.reddit_instances:
+                self.reddit_instances[key] = praw.Reddit(
+                    client_id=client_id,
+                    client_secret=client_secret,
+                    user_agent=user_agent
+                )
+
+            return self.reddit_instances[key]
 
     def test_links_to_image(self, reddit_client_id, reddit_client_secret,
                             reddit_user_agent, image_submission_id):
