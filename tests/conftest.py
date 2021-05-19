@@ -1,12 +1,14 @@
 """ A file that tells pytest to accept the reddit client id and secret as
 command line arguments. """
 
+from functools import lru_cache
 import pytest
+import praw
 
 OPTION_STRINGS = {
-    'id': '--reddit-client-id',
-    'secret': '--reddit-client-secret',
-    'agent': '--reddit-user-agent',
+    'client_id': '--reddit-client-id',
+    'client_secret': '--reddit-client-secret',
+    'user_agent': '--reddit-user-agent',
 }
 
 
@@ -18,20 +20,23 @@ def pytest_addoption(parser):
         'default': None,
     }
 
-    for key in OPTION_STRINGS:
-        parser.addoption(OPTION_STRINGS[key], **info)
+    for option_cli_string in OPTION_STRINGS.values():
+        parser.addoption(option_cli_string, **info)
+
+
+@lru_cache()
+def get_reddit_instance(*args, **kwargs):
+    return praw.Reddit(*args, **kwargs)
 
 
 @pytest.fixture
-def reddit_client_id(request):
-    return request.config.getoption(OPTION_STRINGS['id'])
+def reddit(request):
+    credentials = {
+        option: request.config.getoption(option_cli_string)
+        for option, option_cli_string in OPTION_STRINGS.items()
+    }
 
+    if None in credentials.values():
+        pytest.skip("Some reddit credentials aren't provided")
 
-@pytest.fixture
-def reddit_client_secret(request):
-    return request.config.getoption(OPTION_STRINGS['secret'])
-
-
-@pytest.fixture
-def reddit_user_agent(request):
-    return request.config.getoption(OPTION_STRINGS['agent'])
+    return get_reddit_instance(**credentials)
