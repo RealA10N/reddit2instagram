@@ -1,5 +1,5 @@
 """ A file that tells pytest to accept the reddit client id and secret as
-command line arguments. """
+command line arguments, and generates the `praw.Reddit` instances. """
 
 from functools import lru_cache
 import pytest
@@ -31,6 +31,10 @@ def get_reddit_instance(*args, **kwargs):
 
 @pytest.fixture
 def reddit(request):
+    """ Returns a `praw.Reddit` instance from the credentials passed to pytest
+    as a command line arguments. If one or more required credentials are
+    missing, the test skips. """
+
     credentials = {
         option: request.config.getoption(option_cli_string)
         for option, option_cli_string in OPTION_STRINGS.items()
