@@ -23,12 +23,7 @@ class SubmissionUtils:
 
         response = requests.head(submission.url)
         content_type = response.headers.get('content-type')
-
-        return (
-            content_type and
-            'image' in content_type and
-            'gif' not in content_type
-        )
+        return content_type and content_type.startswith('image')
 
     @staticmethod
     def get_image(submission: Submission) -> typing.Optional[Image.Image]:

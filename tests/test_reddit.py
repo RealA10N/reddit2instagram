@@ -6,8 +6,10 @@ from reddit2instagram.utils import SubmissionUtils
 
 @pytest.mark.parametrize(
     'image_submission_id', (
-        'nff5zj',
-        'nfjajc',
+        'nff5zj',   # .png image (transparent)
+        'nfjajc',   # .jpg image
+        'nfyahs',   # .gif image (not animated)
+        'nfygeo',   # .gif image (animated)
     )
 )
 class TestRedditUtils:
@@ -36,4 +38,8 @@ class TestRedditUtils:
             reddit_client_id, reddit_client_secret, reddit_user_agent)
 
         submission = reddit.submission(id=image_submission_id)
-        assert SubmissionUtils.links_to_image(submission)
+        if not SubmissionUtils.links_to_image(submission):
+            pytest.fail(
+                f"Submission with ID '{image_submission_id}' contains an image, "
+                + "but the image isn't detected."
+            )
