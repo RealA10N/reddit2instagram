@@ -4,15 +4,18 @@ from PIL import Image
 
 from reddit2instagram.utils import SubmissionUtils
 
-
-@pytest.mark.parametrize(
-    'image_submission_id', (
-        'nff5zj',   # .png image (transparent)
-        'nfjajc',   # .jpg image
-        'nfyahs',   # .gif image (not animated)
-        'nfygeo',   # .gif image (animated)
-    )
+IMAGE_SUBMISSION_IDS = (
+    'nff5zj',   # .png image (transparent)
+    'nfjajc',   # .jpg image
+    'nfyahs',   # .gif image (not animated)
+    'nfygeo',   # .gif image (animated)
 )
+
+NOT_IMAGE_SUBMISSION_IDS = (
+    'nfysvm',    # text only
+)
+
+
 class TestRedditUtils:
 
     reddit_instances = dict()
@@ -33,6 +36,7 @@ class TestRedditUtils:
 
             return self.reddit_instances[key]
 
+    @pytest.mark.parametrize('image_submission_id', IMAGE_SUBMISSION_IDS)
     def test_submission_links_to_image(self, reddit_client_id, reddit_client_secret,
                                        reddit_user_agent, image_submission_id):
         reddit = self._get_reddit_instance(
@@ -45,6 +49,7 @@ class TestRedditUtils:
                 + "but the image isn't detected."
             )
 
+    @pytest.mark.parametrize('image_submission_id', IMAGE_SUBMISSION_IDS)
     def test_get_image_from_submission(self, reddit_client_id, reddit_client_secret,
                                        reddit_user_agent, image_submission_id):
         reddit = self._get_reddit_instance(
@@ -56,3 +61,14 @@ class TestRedditUtils:
         assert isinstance(img, Image.Image)
         assert img.width > 0
         assert img.height > 0
+
+    @pytest.mark.parametrize('no_image_submission_id', NOT_IMAGE_SUBMISSION_IDS)
+    def test_get_image_from_submission_fails(
+            self, reddit_client_id, reddit_client_secret,
+            reddit_user_agent, no_image_submission_id):
+        reddit = self._get_reddit_instance(
+            reddit_client_id, reddit_client_secret, reddit_user_agent)
+
+        submission = reddit.submission(id=no_image_submission_id)
+        img = SubmissionUtils.get_image(submission)
+        assert img is None
