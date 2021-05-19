@@ -1,5 +1,6 @@
 import pytest
 import praw
+from PIL import Image
 
 from reddit2instagram.utils import SubmissionUtils
 
@@ -32,8 +33,8 @@ class TestRedditUtils:
 
             return self.reddit_instances[key]
 
-    def test_links_to_image(self, reddit_client_id, reddit_client_secret,
-                            reddit_user_agent, image_submission_id):
+    def test_submission_links_to_image(self, reddit_client_id, reddit_client_secret,
+                                       reddit_user_agent, image_submission_id):
         reddit = self._get_reddit_instance(
             reddit_client_id, reddit_client_secret, reddit_user_agent)
 
@@ -43,3 +44,15 @@ class TestRedditUtils:
                 f"Submission with ID '{image_submission_id}' contains an image, "
                 + "but the image isn't detected."
             )
+
+    def test_get_image_from_submission(self, reddit_client_id, reddit_client_secret,
+                                       reddit_user_agent, image_submission_id):
+        reddit = self._get_reddit_instance(
+            reddit_client_id, reddit_client_secret, reddit_user_agent)
+
+        submission = reddit.submission(id=image_submission_id)
+        img = SubmissionUtils.get_image(submission)
+
+        assert isinstance(img, Image.Image)
+        assert img.width > 0
+        assert img.height > 0
