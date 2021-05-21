@@ -9,6 +9,7 @@ IMAGE_SUBMISSION_IDS = (
     'nfjajc',   # .jpg image
     'nfyahs',   # .gif image (not animated)
     'nfygeo',   # .gif image (animated)
+    'ni3u2e',   # .png image (hosted on Imgur)
 )
 
 NOT_IMAGE_SUBMISSION_IDS = (
