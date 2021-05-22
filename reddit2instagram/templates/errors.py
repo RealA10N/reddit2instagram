@@ -93,8 +93,8 @@ class TemplateCheckErrorCollection:
 
         errors = [
             error
-            for error in error_group
             for error_group in self.by_type.values()
+            for error in error_group
         ] if group_by_type else self.by_order
 
         for error in errors:
