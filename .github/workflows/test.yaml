@@ -1,4 +1,4 @@
-name: Reddit2Instagram
+name: Test
 
 on: [push, pull_request]
 
@@ -29,4 +29,8 @@ jobs:
           --show-source --statistics
 
       - name: Test
-        run: python -m pytest
+        run: >
+          python -m pytest
+          --reddit-client-id ${{ secrets.reddit_client_id }}
+          --reddit-client-secret ${{ secrets.reddit_client_secret }}
+          --reddit-user-agent "reddit2instagram:GitHubActionsTesting"
