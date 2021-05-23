@@ -18,8 +18,7 @@ class TemplateCheckError:
         """ A string that represents the path where the template check error
         occurred. """
 
-        sep = '.'
-        return sep + sep.join(self.path)
+        return ''.join(f'[{element}]' for element in self.path)
 
     @property
     def description(self,) -> str:
