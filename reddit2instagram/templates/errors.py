@@ -24,10 +24,8 @@ class TemplateCheckError(Exception):
     def description(self,) -> str:
         """ Generates and returns a string that represents the current template
         check error. """
-
-        msg = self.path_str
-        if self.msg:
-            msg += ' - ' + self.msg
+        msg = f'{self.path_str} - ' if self.path else str()
+        msg += self.msg if self.msg else str()
         return msg
 
 
@@ -36,7 +34,7 @@ class TemplateCheckMissingDataError(TemplateCheckError):
     data is missing. """
 
     def __init__(self, path):
-        super().__init__(path)
+        super().__init__(path, msg='Missing required information')
 
 
 class TemplateCheckInvalidDataError(TemplateCheckError):
