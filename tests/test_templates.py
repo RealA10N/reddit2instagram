@@ -1,3 +1,4 @@
+import math
 import pytest
 from reddit2instagram.templates import Template, TemplateCheckError
 
@@ -43,3 +44,21 @@ class TestTemplateChecks:
         it should raise an template check error. """
         with pytest.raises(TemplateCheckError):
             Template(template_type).check(template_type)
+
+    @pytest.mark.parametrize('valid_types, data_collection', [
+        pytest.param(
+            (int, float, complex),
+            (1, math.inf, math.pi, math.sqrt(2), complex(1, 2), complex(1, 0)),
+            id='numbers',
+        ),
+        pytest.param(
+            (list, tuple, set),
+            ([1, 2, 3], (1, 2, 3), {1, 2, 3},
+             ['hello', 123, list], tuple()),
+            id='collections',
+        )
+    ])
+    def test_basic_template_multiple_accepted_values(self, valid_types, data_collection):
+        template = Template(*valid_types)
+        for data in data_collection:
+            template.check(data)
