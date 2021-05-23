@@ -58,10 +58,8 @@ class TemplateCheckInvalidDataError(TemplateCheckError):
         start, last = self.expected[:-1], self.expected[-1]
         string = ', '.join(formatname(type_) for type_ in start)
 
-        if len(start) == 1:
+        if string:
             string += ' or '
-        elif string:
-            string += 'or '
 
         string += formatname(last)
         return string
