@@ -54,24 +54,38 @@ class TemplateCheckInvalidDataError(TemplateCheckError):
 
     ERROR_TITLE = 'INVALID DATA'
 
-    def __init__(self, path, expected: type, got: type):
+    def __init__(self, path, expected: typing.Tuple[type], got: type):
         self.expected = expected
         self.got = got
 
         super().__init__(
             path,
-            msg=f"Expected '{self.expected_str}', got '{self.got_str}'",
+            msg=f"Expected {self.expected_str}, got '{self.got_str}'",
         )
 
     @property
     def expected_str(self,) -> str:
         """ A string that represents the expected type """
-        return type(self.expected).__name__
+        formatname = lambda name: f"'{name.__name__}'"
+
+        start, last = self.expected[:-1], self.expected[-1]
+        string = ', '.join(formatname(type_) for type_ in start)
+
+        if len(start) == 1:
+            string += ' or '
+        elif string:
+            string += 'or '
+
+        string += formatname(last)
+        return string
 
     @property
     def got_str(self,) -> str:
         """ A string that represents the given type """
-        return type(self.got).__name__
+        got = self.got
+        if not isinstance(got, type):
+            got = type(got)
+        return got.__name__
 
 
 class TemplateCheckErrorCollection:
