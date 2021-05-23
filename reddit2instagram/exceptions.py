@@ -1,5 +1,6 @@
 class Reddit2InstagramException(Exception):
-    pass
+    """ A general exception in the reddit2instagram module. All other exceptions
+    in reddit2instagram inherit this exception."""
 
 
 class InvalidTemplateConfiguration(Reddit2InstagramException, TypeError):
