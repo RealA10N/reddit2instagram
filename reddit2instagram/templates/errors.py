@@ -2,7 +2,7 @@ import typing
 from collections import defaultdict
 
 
-class TemplateCheckError:
+class TemplateCheckError(Exception):
     """ A general object that represents a template check error.
     Although you can create instances of it, it is highly recommended to use
     subclasses of it to better describe the check error. """
@@ -10,6 +10,8 @@ class TemplateCheckError:
     def __init__(self, path: typing.List[str], msg: str = None):
         self.path = path
         self.msg = msg
+
+        super().__init__(self.description)
 
     @property
     def path_str(self,) -> str:
