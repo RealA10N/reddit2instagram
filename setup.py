@@ -11,10 +11,7 @@ def get_requirements(filename: str):
     Loads the list from the requirements.txt file. """
 
     with open(path.join(HERE, filename), 'r') as file:
-        return [
-            line for line in file.read().splitlines()
-            if line
-        ]
+        return file.read().splitlines()
 
 
 def get_extra_requirements():
@@ -53,6 +50,6 @@ setuptools.setup(
     ],
     python_requires=">=3.6",
     packages=setuptools.find_packages(),
-    install_requirements=get_requirements('requirements.txt'),
+    install_requires=get_requirements('requirements.txt'),
     extras_require=get_extra_requirements(),
 )
