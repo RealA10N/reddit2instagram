@@ -2,4 +2,4 @@ pillow>=8.0.0       # Image generation
 requests>=2.23.0    # Downloading images from reddit
 praw>=7.1.0         # Reddit API
 instabot>=0.117.0   # Instagram API
-pyyaml>=5.4.1       # Loading yaml configuration files
+validit[yaml,toml]==1.0.1   # Loading yaml and toml configuration files
