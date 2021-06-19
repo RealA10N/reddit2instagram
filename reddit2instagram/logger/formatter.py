@@ -49,7 +49,7 @@ class PrettyFormater(logging.Formatter):
     def format(self, record: logging.LogRecord):
         message = self._to_colored_message(record)
         pre_msg = self._pre_message(record)
-        newline = '\n' if record.levelno >= logging.WARNING else ''
+        newline = '\n' if record.levelno > logging.INFO else ''
 
         if self.count == 0:
             msg = f'{pre_msg}{message}{newline}'
