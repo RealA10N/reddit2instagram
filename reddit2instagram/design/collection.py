@@ -41,7 +41,17 @@ class DesignCollection:
     )
 
     def __init__(self):
-        self.__designs = dict()
+        self.__designs: typing.Dict[Design] = dict()
+
+    def __repr__(self,):
+        names = ', '.join(design.info.name for design in self.__designs)
+        return f'DesignCollection<{names}>'
+
+    def __iter__(self,):
+        return iter(self.__designs.values())
+
+    def __contains__(self, value):
+        return value in self.__designs
 
     def get_design(self, name: str) -> typing.Optional[Design]:
         """ Returns a design by name from the collected designs. If design with
@@ -64,8 +74,9 @@ class DesignCollection:
 
         if name_taken:
             logger.warning(
-                'Found multiple designs named *%s*... '
-                'The first one found will be collected'
+                'Found multiple designs named *%s*. '
+                'The first one found will be collected',
+                name,
             )
 
         else:
