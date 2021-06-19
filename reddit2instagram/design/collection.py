@@ -92,6 +92,15 @@ class DesignCollection:
                     for new in os.listdir(path)
                 ]
 
+    def search_bundled_designs(self,) -> None:
+        """ Collects the bundled designs that came installed with the installation
+        of the base reddit2instagram module. """
+
+        here = os.path.dirname(__file__)
+        bundled = os.path.join(here, 'bundled', '__init__.py')
+
+        self.search_designs_in_file(bundled)
+
     def search_designs_in_file(self, path: str):
         """ Recives a path to a Python file, and tries to load it and import
         the designs located in the `__designs__` variable. If designs are found,
@@ -104,9 +113,8 @@ class DesignCollection:
             designs = module.__designs__
 
         except AttributeError:
-            logger.warning(
-                'While searching for designs, found Python '
-                "file *%s* without the '__designs__' constant",
+            logger.debug(
+                "Found Python file file *%s* without the '__designs__' constant",
                 path
             )
 
