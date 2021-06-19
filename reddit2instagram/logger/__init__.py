@@ -1,1 +1,2 @@
-from .formatter import PrettyFormater, getPrettyLogger
+from .formatter import PrettyFormater
+from .setup import setup_logger
