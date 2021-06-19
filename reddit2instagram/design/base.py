@@ -26,7 +26,7 @@ class Design(ABC):
     @property
     @classmethod
     @abstractmethod
-    def _info(cls) -> DesignInfo:
+    def info(cls) -> DesignInfo:
         """ A class property that saves information about the design template,
         including the template itself, and the name of the design (as it should
         appear in the configuration file). """
