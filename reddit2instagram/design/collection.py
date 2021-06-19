@@ -41,7 +41,13 @@ class DesignCollection:
     )
 
     def __init__(self):
-        self.__designs = list()
+        self.__designs = dict()
+
+    def get_design(self, name: str) -> typing.Optional[Design]:
+        """ Returns a design by name from the collected designs. If design with
+        the given name is not collected, returns `None`. """
+
+        return self.__designs.get(name)
 
     def collect_design(self, design: typing.Type[Design]) -> None:
         """ Recives a design object and adds it to the collection. If the given
@@ -53,8 +59,18 @@ class DesignCollection:
                 return
 
         # If passed all tests
-        self.__designs.append(design)
-        logger.debug('Collected design object *%s*', design.info.name)
+        name = design.info.name
+        name_taken = name in self.__designs
+
+        if name_taken:
+            logger.warning(
+                'Found multiple designs named *%s*... '
+                'The first one found will be collected'
+            )
+
+        else:
+            self.__designs[name] = design
+            logger.debug('Collected design *%s*', design.info.name)
 
     def search_designs(self, path: str) -> None:
         """ Recives a path to a Python file that contains a collection of designs,
