@@ -1,26 +1,11 @@
 import typing
 import logging
 import re
-from time import time
 
 from termcolor import colored
 
-from .utils import Singleton
 
-
-class SingletonMeta(type):
-    """ A metaclass that implements the Singleton design pattern in Python """
-
-    __instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls.__instances:
-            cls.__instances[cls] = super(
-                SingletonMeta, cls).__call__(*args, **kwargs)
-        return cls.__instances[cls]
-
-
-class PrettyFormater(logging.Formatter, metaclass=SingletonMeta):
+class PrettyFormater(logging.Formatter):
     """ A custom formatter that is used with the logger in the main script. """
 
     COLOR_EXPRESSION = re.compile(r'\*(.*?)\*')
@@ -32,9 +17,10 @@ class PrettyFormater(logging.Formatter, metaclass=SingletonMeta):
         logging.ERROR: 'red',
     }
 
-    def __init__(self,):
-        super().__init__()
-        self.start = time()
+    MESSAGES = {
+        logging.WARNING: 'Warning: ',
+        logging.ERROR: 'Error: ',
+    }
 
     def _to_colored_message(self, record: logging.LogRecord) -> str:
 
@@ -47,20 +33,32 @@ class PrettyFormater(logging.Formatter, metaclass=SingletonMeta):
 
         return re.sub(self.COLOR_EXPRESSION, handle, record.getMessage())
 
-    def _time_string(self,) -> str:
-        elapsed = int(time() - self.start)
-        minutes = elapsed // 60
-        seconds = elapsed % 60
+    def _pre_message(self, record: logging.LogRecord) -> str:
+        msg = self.MESSAGES.get(record.levelno)
 
         return colored(
-            f'{minutes:02d}:{seconds:02d}',
-            color='white',
-            attrs=('bold',),
-        )
+            text=msg,
+            color=self.COLORS.get(record.levelno),
+            attrs=('bold',)
+        ) if msg else ''
 
     def format(self, record: logging.LogRecord):
         message = self._to_colored_message(record)
-        time = self._time_string()
-        sep = colored('|', color='grey')
+        pre_msg = self._pre_message(record)
+        newline = '\n' if record.levelno >= logging.INFO else ''
 
-        return f"{time} {sep} {message}"
+        return f"{newline}{pre_msg}{message}"
+
+
+def getPrettyLogger(name: str) -> logging.Logger:
+    """ Returns a pretty logger with the given name. """
+
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+
+    stream = logging.StreamHandler()
+    stream.setLevel(logging.DEBUG)
+    stream.setFormatter(PrettyFormater())
+    logger.addHandler(stream)
+
+    return logger

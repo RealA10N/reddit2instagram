@@ -1,1 +1,1 @@
-from .formatter import PrettyFormater
+from .formatter import PrettyFormater, getPrettyLogger
