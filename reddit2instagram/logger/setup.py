@@ -28,7 +28,7 @@ def log_system_info() -> None:
     and the running Python version. """
 
     logger = logging.getLogger(__name__)
-    logger.debug(
+    logger.info(
         'Running *reddit2instagram v%s* with *Python %d.%d.%d*',
         reddit2instagram.__version__,
         sys.version_info.major,

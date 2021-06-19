@@ -22,6 +22,10 @@ class PrettyFormater(logging.Formatter):
         logging.ERROR: 'Error: ',
     }
 
+    def __init__(self,):
+        super().__init__()
+        self.count = 0
+
     def _to_colored_message(self, record: logging.LogRecord) -> str:
 
         def handle(match: re.Match):
@@ -45,20 +49,12 @@ class PrettyFormater(logging.Formatter):
     def format(self, record: logging.LogRecord):
         message = self._to_colored_message(record)
         pre_msg = self._pre_message(record)
-        newline = '\n' if record.levelno >= logging.INFO else ''
+        newline = '\n' if record.levelno >= logging.WARNING else ''
 
-        return f"{newline}{pre_msg}{message}"
+        if self.count == 0:
+            msg = f'{pre_msg}{message}{newline}'
+        else:
+            msg = f'{newline}{pre_msg}{message}'
 
-
-def getPrettyLogger(name: str) -> logging.Logger:
-    """ Returns a pretty logger with the given name. """
-
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
-
-    stream = logging.StreamHandler()
-    stream.setLevel(logging.DEBUG)
-    stream.setFormatter(PrettyFormater())
-    logger.addHandler(stream)
-
-    return logger
+        self.count += 1
+        return msg
