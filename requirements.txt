@@ -1,5 +1,7 @@
-pillow>=8.0.0       # Image generation
-requests>=2.23.0    # Downloading images from reddit
-praw>=7.1.0         # Reddit API
-instabot>=0.117.0   # Instagram API
-validit[yaml,toml]==1.0.1   # Loading yaml and toml configuration files
+pillow>=8.0.0
+requests>=2.23.0
+praw>=7.1.0
+instabot>=0.117.0
+validit[yaml,toml]==1.1.0
+termcolor
+dataclasses; python_version < "3.7"
