@@ -2,6 +2,8 @@ from os import path, listdir
 import re
 import setuptools
 
+from reddit2instagram import __version__
+
 THIS = path.realpath(__file__)
 HERE = path.dirname(THIS)
 
@@ -40,7 +42,7 @@ def get_extra_requirements():
 
 setuptools.setup(
     name='reddit2instagram',
-    version='0.0.1',
+    version=__version__,
     author='Alon Krymgand Osovsky',
     author_email='downtown2u@gmail.com',
     description='Converting reddit submissions into instagram posts has never been easier.',
