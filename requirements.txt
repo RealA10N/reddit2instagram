@@ -3,5 +3,6 @@ requests>=2.23.0
 praw>=7.1.0
 instabot>=0.117.0
 validit[yaml,toml]==1.1.0
+simplejsondb==0.4.0
 termcolor
 dataclasses; python_version < "3.7"
