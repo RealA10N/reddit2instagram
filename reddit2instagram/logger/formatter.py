@@ -4,6 +4,8 @@ import re
 
 from termcolor import colored
 
+UNEXPECTED_ERROR = logging.ERROR + 1
+
 
 class PrettyFormater(logging.Formatter):
     """ A custom formatter that is used with the logger in the main script. """
@@ -15,11 +17,13 @@ class PrettyFormater(logging.Formatter):
         logging.INFO: 'cyan',
         logging.WARNING: 'yellow',
         logging.ERROR: 'red',
+        UNEXPECTED_ERROR: 'red',
     }
 
     MESSAGES = {
         logging.WARNING: 'Warning: ',
         logging.ERROR: 'Error: ',
+        UNEXPECTED_ERROR: 'Unexpected Error: '
     }
 
     def _to_colored_message(self, record: logging.LogRecord) -> str:
