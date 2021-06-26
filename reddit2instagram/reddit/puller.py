@@ -15,7 +15,7 @@ OptionalBool = typing.Union[DontCare, bool]
 
 @dataclass(frozen=True)
 class SubmissionOptions:
-    nsfw: OptionalBool = False
+    nsfw: bool = False
     selfpost: OptionalBool = DontCare
     image: OptionalBool = DontCare
 
@@ -27,7 +27,7 @@ class SubmissionOptions:
         tests = {
             'nsfw': (
                 self.nsfw,
-                submission.over_18,
+                submission.over_18 or self.nsfw,
             ),
             'selfpost': (
                 not self.image or self.selfpost,

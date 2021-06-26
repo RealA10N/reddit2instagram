@@ -7,7 +7,14 @@ from functools import cached_property
 import praw
 from prawcore.exceptions import ResponseException, OAuthException
 
-from validit import ValidateFromYAML, Template, TemplateDict, TemplateList, Optional
+from validit import (
+    ValidateFromYAML,
+    Template,
+    TemplateDict,
+    TemplateList,
+    Optional,
+    Options,
+)
 
 from reddit2instagram.exceptions import (
     ConfigurationNotFoundError,
@@ -16,6 +23,8 @@ from reddit2instagram.exceptions import (
     RedditConnectionError,
     RedditWrongUserError,
 )
+
+from reddit2instagram import SubmissionOptions
 
 # flake8: noqa E701
 logger = logging.getLogger(__name__)
@@ -34,6 +43,8 @@ template = TemplateDict(
             )),
             agent=Optional(Template(str), default='reddit2instagram'),
         ),
+        nsfw=Optional(Template(bool), default=False),
+        only=Optional(Options('images', 'text')),
     ),
 )
 
@@ -64,6 +75,11 @@ class Loader:
 
     @cached_property
     def reddit(self,) -> praw.Reddit:
+        """ Returns a `praw.Reddit` instance that is generated using the data
+        in the loaded configuration file. If something goes wrong (for example,
+        if the credentials in the configuration file are wrong), raises an
+        `ScriptError`. """
+
         info = self.data['reddit']['login']
 
         kwargs = {
@@ -92,3 +108,22 @@ class Loader:
                 'Successfully logged into reddit with user *%s*',
                 reddit.user.me()
             )
+
+        return reddit
+
+    @cached_property
+    def submission_options(self) -> SubmissionOptions:
+        """ Returns a dataclass that describes what submissions should be pulled
+        from reddit. The submission option is generated from the data in the
+        loaded configuration file. """
+
+        info = self.data['reddit']
+        kwargs = {'nsfw': info['nsfw']}
+
+        only = info.get('only')
+        if only == 'images':
+            kwargs.update({'image': True})
+        if only == 'text':
+            kwargs.update({'selfpost': True})
+
+        return SubmissionOptions(**kwargs)
