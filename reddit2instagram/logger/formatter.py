@@ -22,10 +22,6 @@ class PrettyFormater(logging.Formatter):
         logging.ERROR: 'Error: ',
     }
 
-    def __init__(self,):
-        super().__init__()
-        self.count = 0
-
     def _to_colored_message(self, record: logging.LogRecord) -> str:
 
         def handle(match: re.Match):
@@ -46,15 +42,17 @@ class PrettyFormater(logging.Formatter):
             attrs=('bold',)
         ) if msg else ''
 
-    def format(self, record: logging.LogRecord):
+    def format(self, record: logging.LogRecord) -> str:
         message = self._to_colored_message(record)
         pre_msg = self._pre_message(record)
-        newline = '\n' if record.levelno > logging.INFO else ''
 
-        if self.count == 0:
-            msg = f'{pre_msg}{message}{newline}'
-        else:
-            msg = f'{newline}{pre_msg}{message}'
+        lines = (pre_msg + message).splitlines()
 
-        self.count += 1
-        return msg
+        spacing = len(self.MESSAGES.get(record.levelno, ''))
+        for i, line in enumerate(lines[1:], start=1):
+            lines[i] = (spacing * ' ') + line
+
+        if record.levelno >= logging.WARNING:
+            lines.insert(0, '')
+
+        return '\n'.join(lines)
