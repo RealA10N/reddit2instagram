@@ -12,11 +12,11 @@ from validit.errors import TemplateCheckError
 class TemplateCheckColorError(TemplateCheckError):
 
     def __init__(self,
-                 path: typing.List[str],
-                 got: str):
+                 container: BaseContainer,
+                 ) -> None:
         super().__init__(
-            path=path,
-            msg=f"Unknown color specifier '{got}'"
+            container=container,
+            msg=f"Unknown color specifier '{container.data}'"
         )
 
 
@@ -53,7 +53,6 @@ class TemplateColor(Template):
             # rgb color, registers an error!
             errors.register_error(
                 TemplateCheckColorError(
-                    path=container.path,
-                    got=container.data
+                    container=container,
                 )
             )
