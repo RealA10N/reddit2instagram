@@ -31,7 +31,7 @@ class SubmissionOptions:
                 submission.over_18 or self.nsfw,
             ),
             'selfpost': (
-                not self.image or self.selfpost,
+                False if self.image else self.selfpost,
                 submission.is_self,
             ),
             'image': (
@@ -66,7 +66,6 @@ class SubmissionPuller:
 
         for submission in self.subreddit.hot():
             submission: Submission
-            print(f'testing submission {submission.id}')
             if options.is_matching(submission) and not self.is_registered(submission):
                 return submission
 
