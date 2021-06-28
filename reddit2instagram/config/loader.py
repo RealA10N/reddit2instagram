@@ -113,6 +113,7 @@ class Loader:
 
         return reddit
 
+    @property
     def submission_options(self) -> SubmissionOptions:
         """ Returns a dataclass that describes what submissions should be pulled
         from reddit. The submission option is generated from the data in the
@@ -129,6 +130,7 @@ class Loader:
 
         return SubmissionOptions(**kwargs)
 
+    @property
     def subreddit(self,) -> Subreddit:
         subreddits = self.data['reddit']['subreddits']
         return self.reddit.subreddit('+'.join(subreddits))
