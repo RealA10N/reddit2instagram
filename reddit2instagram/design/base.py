@@ -20,6 +20,8 @@ class DesignInfo:
     # used to validate the data given in the configuration file.
     template: BaseTemplate
 
+    # A short one-liner that describes the features in the design.
+    description: str = None
 
 
 @dataclass(frozen=True)
