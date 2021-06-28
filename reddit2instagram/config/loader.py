@@ -5,6 +5,7 @@ import os
 from functools import cached_property
 
 import praw
+from praw.models import Subreddit
 from prawcore.exceptions import ResponseException, OAuthException
 
 from validit import (
@@ -43,6 +44,7 @@ template = TemplateDict(
             )),
             agent=Optional(Template(str), default='reddit2instagram'),
         ),
+        subreddits=TemplateList(Template(str)),
         nsfw=Optional(Template(bool), default=False),
         only=Optional(Options('images', 'text')),
     ),
@@ -111,7 +113,6 @@ class Loader:
 
         return reddit
 
-    @cached_property
     def submission_options(self) -> SubmissionOptions:
         """ Returns a dataclass that describes what submissions should be pulled
         from reddit. The submission option is generated from the data in the
@@ -127,3 +128,7 @@ class Loader:
             kwargs.update({'selfpost': True})
 
         return SubmissionOptions(**kwargs)
+
+    def subreddit(self,) -> Subreddit:
+        subreddits = self.data['reddit']['subreddits']
+        return self.reddit.subreddit('+'.join(subreddits))
