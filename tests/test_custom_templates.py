@@ -1,4 +1,7 @@
+import typing
 import pytest
+
+import os
 
 from validit.utils import DefaultValue
 from validit.containers import HeadContainer
@@ -13,13 +16,21 @@ from reddit2instagram.templates.color import (
     TemplateCheckColorError,
 )
 
+from reddit2instagram.templates.path import (
+    TemplatePath,
+    TemplateCheckPathNotFoundError,
+)
+
+
+def validate(template, data):
+    return template.validate(
+        HeadContainer(data),
+        RaiseOnError(),
+    )
+
 
 @pytest.mark.parametrize('color, expected', [
-    pytest.param(
-        color,
-        expected,
-        id=str(color),
-    )
+    pytest.param(color, expected, id=str(color))
     for color, expected in (
         ('#ffffff', None),
         ('red', None),
@@ -35,17 +46,31 @@ from reddit2instagram.templates.color import (
         ('abcd', TemplateCheckColorError),
     )
 ])
-def test_template_color(color, expected):
-
-    def validate():
-        TemplateColor().validate(
-            HeadContainer(color),
-            RaiseOnError(),
-        )
+def test_template_color(color, expected: Exception):
 
     if expected is None:
-        validate()
+        validate(TemplateColor(), color)
 
     else:
         with pytest.raises(expected):
-            validate()
+            validate(TemplateColor(), color)
+
+
+@pytest.mark.parametrize('path, expected', [
+    pytest.param(path, expected, id=str(path))
+    for path, expected in (
+        (__file__, None),
+        (os.path.dirname(__file__), None),
+        ('.', None),
+        ('./notAfolDer/', TemplateCheckPathNotFoundError),
+        ('notAfilE.txt', TemplateCheckPathNotFoundError),
+    )
+])
+def test_template_path(path: str, expected: Exception):
+
+    if expected is None:
+        validate(TemplatePath(), path)
+
+    else:
+        with pytest.raises(expected):
+            validate(TemplatePath(), path)
