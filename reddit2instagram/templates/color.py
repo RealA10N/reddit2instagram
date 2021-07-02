@@ -3,10 +3,12 @@ import typing
 from PIL import ImageColor
 
 from validit import Template
-from validit.errors.managers import TemplateCheckRaiseOnError as RaiseOnError
-from validit.templates.base import ErrorManager
 from validit.containers import BaseContainer
 from validit.errors import TemplateCheckError
+from validit.errors.managers import (
+    TemplateCheckErrorManager as ErrorManager,
+    TemplateCheckErrorCollection as ErrorCollection,
+)
 
 
 class TemplateCheckColorError(TemplateCheckError):
@@ -36,12 +38,12 @@ class TemplateColor(Template):
                  container: BaseContainer,
                  errors: ErrorManager
                  ) -> None:
-        try:
-            # Validate that the data is a string
-            super().validate(container, RaiseOnError())
+        temp_errors = ErrorCollection()
+        super().validate(container, temp_errors)
 
-        except TemplateCheckError as error:
-            errors.register_error(error)
+        if temp_errors:
+            # If there are errors in the `super` validate method
+            temp_errors.dump_errors(errors)
             return
 
         try:
