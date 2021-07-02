@@ -127,5 +127,5 @@ dmypy.json
 # Custom
 .vscode
 data/
-config/
+/config/
 config.json
